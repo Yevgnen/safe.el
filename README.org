@@ -1,0 +1,13 @@
+* Introduction
+
+Open large/minified files safely in Emacs.
+
+* Usage
+
+Below is the basic setup for ~use-package~ and ~straight.el~.
+
+#+begin_src emacs-lisp
+(use-package safe
+  :straight (:host github :repo "Yevgnen/safe-file.el")
+  :hook (after-init . safe-mode))
+#+end_src
