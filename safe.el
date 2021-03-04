@@ -1,4 +1,4 @@
-;;; safe-file.el --- Open large/minified files safely in Emacs. -*- lexical-binding: t; -*-
+;;; safe.el --- Open large/minified files safely in Emacs. -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2017 Yevgnen Koh
 ;;
@@ -24,7 +24,7 @@
 ;; References:
 ;; https://ztlevi.github.io/posts/A-simple-tweak-to-help-you-edit-minified-files-in-Emacs/
 ;;
-;; See documentation on https://github.com/Yevgnen/safe-file.el.
+;; See documentation on https://github.com/Yevgnen/safe.el.
 
 ;;; Code:
 
@@ -98,4 +98,4 @@
 
 (provide 'safe)
 
-;;; safe-file.el ends here
+;;; safe.el ends here
