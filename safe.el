@@ -28,6 +28,7 @@
 
 ;;; Code:
 
+(require 'subr-x)
 (require 'cl-lib)
 
 (defgroup safe nil
@@ -50,7 +51,7 @@
 
 ;;;###autoload
 (defun safe-archive-file-p (&optional filename)
-  (if-let (filename (or filename (buffer-file-name)))
+  (if-let ((filename (or filename (buffer-file-name))))
       (string-match safe-archive-file-regexp filename)))
 
 ;;;###autoload
@@ -61,13 +62,13 @@
 ;;;###autoload
 (defun safe-large-file-p (&optional filename)
   (unless (safe-archive-file-p filename)
-    (if-let (size (safe-file-size filename))
+    (if-let ((size (safe-file-size filename)))
         (> size large-file-warning-threshold))))
 
 ;;;###autoload
 (defun safe-large-source-file-p (&optional filename)
   (if (safe-source-file-p filename)
-      (if-let (size (safe-file-size filename))
+      (if-let ((size (safe-file-size filename)))
           (> size safe-source-file-warning-threshold))))
 
 ;;;###autoload
