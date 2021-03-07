@@ -8,6 +8,6 @@ Below is the basic setup for ~use-package~ and ~straight.el~.
 
 #+begin_src emacs-lisp
 (use-package safe
-  :straight (:host github :repo "Yevgnen/safe-file.el")
+  :straight (:host github :repo "Yevgnen/safe.el")
   :hook (after-init . safe-mode))
 #+end_src
