@@ -66,6 +66,11 @@
         (> size large-file-warning-threshold))))
 
 ;;;###autoload
+(defun safe-large-buffer-p (&optional buffer)
+  (unless (safe-archive-file-p (buffer-file-name))
+    (> (buffer-size (or buffer (current-buffer))) large-file-warning-threshold)))
+
+;;;###autoload
 (defun safe-large-source-file-p (&optional filename)
   (if (safe-source-file-p filename)
       (if-let ((size (safe-file-size filename)))
@@ -93,8 +98,10 @@
   (if safe-mode
       (progn
         (cl-pushnew (cons #'safe-minified-file-p #'safe-setup) magic-mode-alist :test #'equal)
+        (cl-pushnew (cons #'safe-large-buffer-p #'safe-setup) magic-mode-alist :test #'equal)
         (cl-pushnew (cons #'safe-large-file-p #'safe-setup) magic-mode-alist :test #'equal))
     (cl-remove (cons #'safe-minified-file-p #'safe-setup) magic-mode-alist :test #'equal)
+    (cl-remove (cons #'safe-large-buffer-p #'safe-setup) magic-mode-alist :test #'equal)
     (cl-remove (cons #'safe-large-file-p #'safe-setup) magic-mode-alist :test #'equal)))
 
 (provide 'safe)
