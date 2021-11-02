@@ -86,7 +86,7 @@
 (defun safe-setup ()
   (fundamental-mode)
   (view-mode 1)
-  (show-paren-mode -1)
+  (setq-local show-paren-mode nil)
   (if (featurep 'anzu) (anzu-mode -1))
   (if (featurep 'pangu-spacing) (pangu-spacing-mode -1))
   (buffer-disable-undo))
