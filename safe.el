@@ -45,6 +45,8 @@
 (defvar safe-archive-file-regexp
   (format "\\.\\(%s\\)$" (mapconcat 'identity safe-archive-file-regexp-list "\\|")))
 
+(defvar-local safe-local--enabled-p nil)
+
 ;;;###autoload
 (defun safe-file-size (&optional filename)
   (nth 7 (file-attributes (or filename (buffer-file-name)))))
@@ -84,7 +86,7 @@
 
 ;;;###autoload
 (defun safe-setup ()
-  (fundamental-mode)
+  (setq-local safe-local--enabled-p t)
   (view-mode 1)
   (setq-local show-paren-mode nil)
   (if (featurep 'anzu) (anzu-mode -1))
@@ -92,17 +94,28 @@
   (buffer-disable-undo))
 
 ;;;###autoload
+(defun safe-fundamental-mode ()
+  (interactive)
+  (let ((after-change-major-mode-hook (append after-change-major-mode-hook '(safe-setup))))
+    (fundamental-mode))
+  (setq-local mode-name "Fundamental[safe]"))
+
+;;;###autoload
+(defun safe-local-enabled-p ()
+  safe-local--enabled-p)
+
+;;;###autoload
 (define-minor-mode safe-mode
   "Minor mode for large file setups."
   :global t
   (if safe-mode
       (progn
-        (cl-pushnew (cons #'safe-minified-file-p #'safe-setup) magic-mode-alist :test #'equal)
-        (cl-pushnew (cons #'safe-large-buffer-p #'safe-setup) magic-mode-alist :test #'equal)
-        (cl-pushnew (cons #'safe-large-file-p #'safe-setup) magic-mode-alist :test #'equal))
-    (cl-remove (cons #'safe-minified-file-p #'safe-setup) magic-mode-alist :test #'equal)
-    (cl-remove (cons #'safe-large-buffer-p #'safe-setup) magic-mode-alist :test #'equal)
-    (cl-remove (cons #'safe-large-file-p #'safe-setup) magic-mode-alist :test #'equal)))
+        (cl-pushnew (cons #'safe-minified-file-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
+        (cl-pushnew (cons #'safe-large-buffer-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
+        (cl-pushnew (cons #'safe-large-file-p #'safe-fundamental-mode) magic-mode-alist :test #'equal))
+    (cl-remove (cons #'safe-minified-file-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
+    (cl-remove (cons #'safe-large-buffer-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
+    (cl-remove (cons #'safe-large-file-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)))
 
 (provide 'safe)
 
