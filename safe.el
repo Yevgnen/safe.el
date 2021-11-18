@@ -48,8 +48,8 @@
 (defvar-local safe-local--enabled-p nil)
 
 ;;;###autoload
-(defun safe-file-size (&optional filename)
-  (nth 7 (file-attributes (or filename (buffer-file-name)))))
+(defun safe-file-size (filename)
+  (nth 7 (file-attributes filename)))
 
 ;;;###autoload
 (defun safe-buffer-line-length (n)
@@ -60,35 +60,45 @@
            (line-beginning-position)))))
 
 ;;;###autoload
-(defun safe-archive-file-p (&optional filename)
-  (if-let ((filename (or filename (buffer-file-name))))
-      (string-match safe-archive-file-regexp filename)))
+(defun safe-archive-file-p (filename)
+  (string-match safe-archive-file-regexp filename))
 
 ;;;###autoload
-(defun safe-source-file-p (&optional filename)
-  (and (derived-mode-p 'prog-mode)
-       (not (eq major-mode 'json-mode))))
+(defun safe-prog-buffer-p (buffer)
+  (with-current-buffer buffer
+    (and (derived-mode-p 'prog-mode)
+         (not (eq major-mode 'json-mode)))))
 
 ;;;###autoload
-(defun safe-large-file-p (&optional filename)
-  (unless (safe-archive-file-p filename)
-    (if-let ((size (safe-file-size filename)))
-        (> size large-file-warning-threshold))))
+(defun safe-buffer-too-large-p (buffer)
+  (> (buffer-size buffer)
+     large-file-warning-threshold))
 
 ;;;###autoload
-(defun safe-large-buffer-p (&optional buffer)
-  (unless (safe-archive-file-p (buffer-file-name))
-    (> (buffer-size (or buffer (current-buffer))) large-file-warning-threshold)))
+(defun safe-file-too-large-p (filename)
+  (> (safe-file-size filename)
+     large-file-warning-threshold))
 
 ;;;###autoload
-(defun safe-large-source-file-p (&optional filename)
-  (if (safe-source-file-p filename)
-      (if-let ((size (safe-file-size filename)))
-          (> size safe-source-file-warning-threshold))))
+(defun safe-buffer-large-p (buffer)
+  (let ((filename (buffer-file-name buffer)))
+    (and (not (and filename
+                   (safe-archive-file-p filename)))
+         (safe-buffer-too-large-p buffer))))
 
 ;;;###autoload
-(defun safe-minified-file-p (&optional filename try-lines max-wdith)
-  (unless (safe-archive-file-p filename)
+(defun safe-file-large-p (filename)
+  (and (not (safe-archive-file-p filename))
+       (safe-file-too-large-p filename)))
+
+;;;###autoload
+(defun safe-prog-buffer-large-p (buffer)
+  (and (safe-prog-buffer-p buffer)
+       (safe-buffer-large-p buffer)))
+
+;;;###autoload
+(defun safe-buffer-minified-p (buffer &optional try-lines max-wdith)
+  (with-current-buffer buffer
     (cl-some (lambda (n)
                (ignore-errors (> (safe-buffer-line-length n)
                                  (or max-wdith 1000))))
@@ -115,17 +125,20 @@
   safe-local--enabled-p)
 
 ;;;###autoload
+(defun safe-danger-p ()
+  (let ((buffer (current-buffer)))
+    (or (safe-buffer-large-p buffer)
+        (safe-buffer-minified-p buffer)
+        (and buffer-file-name
+             (safe-file-large-p buffer-file-name)))))
+
+;;;###autoload
 (define-minor-mode safe-mode
   "Minor mode for large file setups."
   :global t
   (if safe-mode
-      (progn
-        (cl-pushnew (cons #'safe-minified-file-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
-        (cl-pushnew (cons #'safe-large-buffer-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
-        (cl-pushnew (cons #'safe-large-file-p #'safe-fundamental-mode) magic-mode-alist :test #'equal))
-    (cl-remove (cons #'safe-minified-file-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
-    (cl-remove (cons #'safe-large-buffer-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
-    (cl-remove (cons #'safe-large-file-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)))
+      (cl-pushnew (cons #'safe-danger-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
+    (cl-remove (cons #'safe-danger-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)))
 
 (provide 'safe)
 
