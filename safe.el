@@ -52,6 +52,14 @@
   (nth 7 (file-attributes (or filename (buffer-file-name)))))
 
 ;;;###autoload
+(defun safe-buffer-line-length (n)
+  (save-excursion
+    (goto-char (point-min))
+    (if (zerop (forward-line (1- n)))
+        (- (line-end-position)
+           (line-beginning-position)))))
+
+;;;###autoload
 (defun safe-archive-file-p (&optional filename)
   (if-let ((filename (or filename (buffer-file-name))))
       (string-match safe-archive-file-regexp filename)))
@@ -81,7 +89,9 @@
 ;;;###autoload
 (defun safe-minified-file-p (&optional filename try-lines max-wdith)
   (unless (safe-archive-file-p filename)
-    (cl-some (lambda (n) (ignore-errors (> (line-length n) (or max-wdith 1000))))
+    (cl-some (lambda (n)
+               (ignore-errors (> (safe-buffer-line-length n)
+                                 (or max-wdith 1000))))
              (number-sequence 1 (or try-lines 10)))))
 
 ;;;###autoload
