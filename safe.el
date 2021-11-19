@@ -138,7 +138,7 @@
   :global t
   (if safe-mode
       (cl-pushnew (cons #'safe-danger-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)
-    (cl-remove (cons #'safe-danger-p #'safe-fundamental-mode) magic-mode-alist :test #'equal)))
+    (setq magic-mode-alist (cl-remove (cons #'safe-danger-p #'safe-fundamental-mode) magic-mode-alist :test #'equal))))
 
 (provide 'safe)
 
