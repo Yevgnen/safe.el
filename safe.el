@@ -49,7 +49,7 @@
 
 ;;;###autoload
 (defun safe-file-size (filename)
-  (nth 7 (file-attributes filename)))
+  (or (nth 7 (file-attributes filename)) 0))
 
 ;;;###autoload
 (defun safe-buffer-line-length (n)
