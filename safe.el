@@ -99,10 +99,12 @@
 ;;;###autoload
 (defun safe-buffer-minified-p (buffer &optional try-lines max-wdith)
   (with-current-buffer buffer
-    (cl-some (lambda (n)
-               (ignore-errors (> (safe-buffer-line-length n)
-                                 (or max-wdith 1000))))
-             (number-sequence 1 (or try-lines 10)))))
+    (and (not (and buffer-file-name
+                   (safe-archive-file-p buffer-file-name)))
+         (cl-some (lambda (n)
+                    (ignore-errors (> (safe-buffer-line-length n)
+                                      (or max-wdith 1000))))
+                  (number-sequence 1 (or try-lines 10))))))
 
 ;;;###autoload
 (defun safe-setup ()
