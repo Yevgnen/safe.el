@@ -118,7 +118,8 @@
 ;;;###autoload
 (defun safe-fundamental-mode ()
   (interactive)
-  (let ((after-change-major-mode-hook (append after-change-major-mode-hook '(safe-setup))))
+  (let* ((local-enable-local-variables nil)
+         (after-change-major-mode-hook (append after-change-major-mode-hook '(safe-setup))))
     (fundamental-mode))
   (setq-local mode-name "Fundamental[safe]"))
 
