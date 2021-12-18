@@ -42,10 +42,14 @@
   '("zip" "gz" "tar.gz" "7z" "rar" "tar" "bz" "bz2" "epub"
     "docx?" "xlsx?" "pptx?"))
 
-(defvar safe-archive-file-regexp
-  (format "\\.\\(%s\\)$" (mapconcat 'identity safe-archive-file-regexp-list "\\|")))
+(defcustom safe-ignore-file-regexp-list
+  (append safe-archive-file-regexp-list (list "pdf"))
+  "File extensions to be ignore when safe checking.")
 
 (defvar-local safe-local--enabled-p nil)
+
+(defun safe-ignore-file-regexp ()
+  (format "\\.\\(%s\\)$" (mapconcat 'identity safe-ignore-file-regexp-list "\\|")))
 
 ;;;###autoload
 (defun safe-file-size (filename)
@@ -60,8 +64,8 @@
            (line-beginning-position)))))
 
 ;;;###autoload
-(defun safe-archive-file-p (filename)
-  (string-match safe-archive-file-regexp filename))
+(defun safe-ignore-file-p (filename)
+  (string-match (safe-ignore-file-regexp) filename))
 
 ;;;###autoload
 (defun safe-prog-buffer-p (buffer)
@@ -83,12 +87,12 @@
 (defun safe-buffer-large-p (buffer)
   (let ((filename (buffer-file-name buffer)))
     (and (not (and filename
-                   (safe-archive-file-p filename)))
+                   (safe-ignore-file-p filename)))
          (safe-buffer-too-large-p buffer))))
 
 ;;;###autoload
 (defun safe-file-large-p (filename)
-  (and (not (safe-archive-file-p filename))
+  (and (not (safe-ignore-file-p filename))
        (safe-file-too-large-p filename)))
 
 ;;;###autoload
@@ -100,7 +104,7 @@
 (defun safe-buffer-minified-p (buffer &optional try-lines max-wdith)
   (with-current-buffer buffer
     (and (not (and buffer-file-name
-                   (safe-archive-file-p buffer-file-name)))
+                   (safe-ignore-file-p buffer-file-name)))
          (cl-some (lambda (n)
                     (ignore-errors (> (safe-buffer-line-length n)
                                       (or max-wdith 1000))))
