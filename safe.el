@@ -112,7 +112,8 @@
 
 ;;;###autoload
 (defun safe-setup ()
-  (setq-local safe-local--enabled-p t)
+  (setq-local safe-local--enabled-p t
+              isearch-lazy-highlight nil)
   (view-mode 1)
   (setq-local show-paren-mode nil)
   (if (featurep 'anzu) (anzu-mode -1))
