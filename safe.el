@@ -115,7 +115,8 @@
   (setq-local safe-local--enabled-p t
               isearch-lazy-highlight nil)
   (view-mode 1)
-  (setq-local show-paren-mode nil)
+  (setq-local show-paren-mode nil
+              show-trailing-whitespace nil)
   (if (featurep 'anzu) (anzu-mode -1))
   (if (featurep 'pangu-spacing) (pangu-spacing-mode -1))
   (buffer-disable-undo))
