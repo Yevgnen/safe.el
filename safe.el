@@ -38,6 +38,9 @@
   "Maximum size of a source file above which a confirmation is requested."
   :type 'float)
 
+(defcustom safe-unsafe-keys '("C-n" "C-p" "C-a" "C-e" "C-v" "M-v" "M-<" "M->")
+  "Unsafe keystrokes.")
+
 (defvar safe-archive-file-regexp-list
   '("zip" "gz" "tar.gz" "7z" "rar" "tar" "bz" "bz2" "epub"
     "docx?" "xlsx?" "pptx?"))
@@ -101,8 +104,8 @@
        (safe-buffer-large-p buffer)))
 
 ;;;###autoload
-(defun safe-buffer-minified-p (buffer &optional try-lines max-wdith)
-  (with-current-buffer buffer
+(defun safe-buffer-minified-p (&optional buffer try-lines max-wdith)
+  (with-current-buffer (or (current-buffer) buffer)
     (and (not (and buffer-file-name
                    (safe-ignore-file-p buffer-file-name)))
          (cl-some (lambda (n)
@@ -126,7 +129,9 @@
   (interactive)
   (let* ((local-enable-local-variables nil)
          (after-change-major-mode-hook (append after-change-major-mode-hook '(safe-setup))))
-    (fundamental-mode))
+    (fundamental-mode)
+    (if (safe-buffer-minified-p)        ; TODO: Remove this duplicated call!
+        (safe-key-mode 1)))
   (setq-local mode-name "Fundamental[safe]"))
 
 ;;;###autoload
@@ -140,6 +145,22 @@
         (safe-buffer-minified-p buffer)
         (and buffer-file-name
              (safe-file-large-p buffer-file-name)))))
+
+(defun safe-ignore (key)
+  (message "Don't shoot yourself! %s disabled." key))
+
+(defvar safe-key-mode-map
+  (let ((map (make-sparse-keymap)))
+    (dolist (key safe-unsafe-keys)
+      (define-key map (kbd key) #'(lambda ()
+                                    (interactive)
+                                    (safe-ignore key))))
+    map))
+
+;;;###autoload
+(define-minor-mode safe-key-mode
+  "Minor mode for large file setups."
+  :keymap safe-key-mode-map)
 
 ;;;###autoload
 (define-minor-mode safe-mode
