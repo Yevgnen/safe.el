@@ -46,7 +46,9 @@
     "docx?" "xlsx?" "pptx?"))
 
 (defcustom safe-ignore-file-regexp-list
-  (append safe-archive-file-regexp-list (list "pdf"))
+  (append safe-archive-file-regexp-list
+          (if (require 'image-file nil t) image-file-name-extensions)
+          (list "pdf"))
   "File extensions to be ignore when safe checking.")
 
 (defvar-local safe-local--enabled-p nil)
