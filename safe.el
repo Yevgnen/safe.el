@@ -132,8 +132,10 @@
   (let* ((local-enable-local-variables nil)
          (after-change-major-mode-hook (append after-change-major-mode-hook '(safe-setup))))
     (fundamental-mode)
-    (if (safe-buffer-minified-p)        ; TODO: Remove this duplicated call!
-        (safe-key-mode 1)))
+    (when (safe-buffer-minified-p)        ; TODO: Remove this duplicated call!
+      (safe-key-mode 1)
+      (if (featurep 'hl-line)
+          (hl-line-mode -1))))
   (setq-local mode-name "Fundamental[safe]"))
 
 ;;;###autoload
