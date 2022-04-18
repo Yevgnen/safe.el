@@ -121,7 +121,8 @@
               isearch-lazy-highlight nil)
   (view-mode 1)
   (setq-local show-paren-mode nil
-              show-trailing-whitespace nil)
+              show-trailing-whitespace nil
+              isearch-lazy-count nil)
   (if (featurep 'anzu) (anzu-mode -1))
   (if (featurep 'pangu-spacing) (pangu-spacing-mode -1))
   (buffer-disable-undo))
