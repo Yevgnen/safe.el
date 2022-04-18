@@ -164,7 +164,7 @@
              (safe-file-large-p buffer-file-name)))))
 
 (defun safe-ignore (key)
-  (message "Don't shoot yourself! `%s' disabled." key))
+  (message "Don't shoot yourself! `%s' disabled. Use M-x `safe-key-mode' to die." key))
 
 (defvar safe-key-mode-map
   (let ((map (make-sparse-keymap)))
