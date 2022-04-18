@@ -38,8 +38,20 @@
   "Maximum size of a source file above which a confirmation is requested."
   :type 'float)
 
-(defcustom safe-unsafe-keys '("C-n" "C-p" "C-a" "C-e" "C-v" "M-v" "M-<" "M->")
-  "Unsafe keystrokes.")
+(defcustom safe-unsafe-commands
+  '(next-line
+    previous-line
+    beginning-of-line
+    end-of-file
+    beginning-of-buffer
+    end-of-buffer
+    scroll-up-command
+    scroll-down-command
+    View-scroll-line-forward
+    View-scroll-line-backward
+    View-scroll-half-page-forward
+    View-scroll-half-page-backward)
+  "Unsafe commands.")
 
 (defvar safe-archive-file-regexp-list
   '("zip" "gz" "tar.gz" "7z" "rar" "tar" "bz" "bz2" "epub"
@@ -152,14 +164,14 @@
              (safe-file-large-p buffer-file-name)))))
 
 (defun safe-ignore (key)
-  (message "Don't shoot yourself! %s disabled." key))
+  (message "Don't shoot yourself! `%s' disabled." key))
 
 (defvar safe-key-mode-map
   (let ((map (make-sparse-keymap)))
-    (dolist (key safe-unsafe-keys)
-      (define-key map (kbd key) #'(lambda ()
-                                    (interactive)
-                                    (safe-ignore key))))
+    (dolist (cmd safe-unsafe-commands)
+      (define-key map `[remap ,cmd] #'(lambda ()
+                                        (interactive)
+                                        (safe-ignore (symbol-name cmd)))))
     map))
 
 ;;;###autoload
