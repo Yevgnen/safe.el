@@ -41,7 +41,9 @@
 (defcustom safe-unsafe-commands
   '(next-line
     previous-line
+    move-beginning-of-line
     beginning-of-line
+    move-end-of-file
     end-of-file
     beginning-of-buffer
     end-of-buffer
