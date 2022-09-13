@@ -56,7 +56,7 @@
   "Unsafe commands.")
 
 (defvar safe-archive-file-regexp-list
-  '("zip" "gz" "tar.gz" "7z" "rar" "tar" "bz" "bz2" "epub"
+  '("zip" "gz" "tar.gz" "7z" "rar" "tar" "bz" "bz2" "epub" "tgz"
     "docx?" "xlsx?" "pptx?"))
 
 (defcustom safe-ignore-file-regexp-list
