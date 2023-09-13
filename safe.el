@@ -139,6 +139,7 @@
               isearch-lazy-count nil)
   (if (featurep 'anzu) (anzu-mode -1))
   (if (featurep 'pangu-spacing) (pangu-spacing-mode -1))
+  (if (featurep 'indent-bars) (indent-bars-mode -1))
   (buffer-disable-undo))
 
 ;;;###autoload
