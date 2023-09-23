@@ -38,6 +38,10 @@
   "Maximum size of a source file above which a confirmation is requested."
   :type 'float)
 
+(defcustom safe-maximum-lines 10000
+  "Maximum numbers of lines above which `safe-mode' is triggered."
+  :type 'integer)
+
 (defcustom safe-unsafe-commands
   '(next-line
     previous-line
@@ -130,6 +134,12 @@
                   (number-sequence 1 (or try-lines 10))))))
 
 ;;;###autoload
+(defun safe-buffer-too-many-lines-p (&optional buffer)
+  (with-current-buffer (or buffer (current-buffer))
+    (> (count-lines (point-min) (point-max))
+       safe-maximum-lines)))
+
+;;;###autoload
 (defun safe-setup ()
   (setq-local safe-local--enabled-p t
               isearch-lazy-highlight nil)
@@ -161,8 +171,10 @@
 ;;;###autoload
 (defun safe-danger-p ()
   (let ((buffer (current-buffer)))
+    (with-current-buffer buffer (widen))
     (or (safe-buffer-large-p buffer)
         (safe-buffer-minified-p buffer)
+        (safe-buffer-too-many-lines-p buffer)
         (and buffer-file-name
              (safe-file-large-p buffer-file-name)))))
 
