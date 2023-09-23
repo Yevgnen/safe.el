@@ -121,7 +121,7 @@
 
 ;;;###autoload
 (defun safe-buffer-minified-p (&optional buffer try-lines max-wdith)
-  (with-current-buffer (or (current-buffer) buffer)
+  (with-current-buffer (or buffer (current-buffer))
     (and (not (and buffer-file-name
                    (safe-ignore-file-p buffer-file-name)))
          (cl-some (lambda (n)
