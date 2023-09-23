@@ -137,9 +137,9 @@
   (setq-local show-paren-mode nil
               show-trailing-whitespace nil
               isearch-lazy-count nil)
-  (if (featurep 'anzu) (anzu-mode -1))
-  (if (featurep 'pangu-spacing) (pangu-spacing-mode -1))
-  (if (featurep 'indent-bars) (indent-bars-mode -1))
+  (if (bound-and-true-p anzu-mode) (anzu-mode -1))
+  (if (bound-and-true-p pangu-spacing-mode) (pangu-spacing-mode -1))
+  (if (bound-and-true-p indent-bars-mode) (indent-bars-mode -1))
   (buffer-disable-undo))
 
 ;;;###autoload
@@ -150,7 +150,7 @@
     (fundamental-mode)
     (when (safe-buffer-minified-p)        ; TODO: Remove this duplicated call!
       (safe-key-mode 1)
-      (if (featurep 'hl-line)
+      (if (bound-and-true-p hl-line-mode)
           (hl-line-mode -1))))
   (setq-local mode-name "Fundamental[safe]"))
 
