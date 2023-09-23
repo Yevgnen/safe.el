@@ -130,7 +130,7 @@
                    (safe-ignore-file-p buffer-file-name)))
          (cl-some (lambda (n)
                     (ignore-errors (> (safe-buffer-line-length n)
-                                      (or max-wdith 1000))))
+                                      (or max-wdith 10000))))
                   (number-sequence 1 (or try-lines 10))))))
 
 ;;;###autoload
