@@ -135,9 +135,10 @@
 
 ;;;###autoload
 (defun safe-buffer-too-many-lines-p (&optional buffer)
-  (with-current-buffer (or buffer (current-buffer))
-    (> (count-lines (point-min) (point-max))
-       safe-maximum-lines)))
+  (and (not (safe-ignore-file-p (buffer-file-name)))
+       (with-current-buffer (or buffer (current-buffer))
+         (> (count-lines (point-min) (point-max))
+            safe-maximum-lines))))
 
 ;;;###autoload
 (defun safe-setup ()
